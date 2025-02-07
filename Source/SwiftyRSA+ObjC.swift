@@ -26,9 +26,9 @@ private protocol ObjcBridgeable {
 public class _objc_KeyPair: NSObject { // swiftlint:disable:this type_name
     
     @objc public let privateKey: _objc_PrivateKey
-    @objc public let publicKey: _objc_PublicKey
+    @objc public let publicKey: _objc_RSA_PublicKey
     
-    init(privateKey: _objc_PrivateKey, publicKey: _objc_PublicKey) {
+    init(privateKey: _objc_PrivateKey, publicKey: _objc_RSA_PublicKey) {
         self.privateKey = privateKey
         self.publicKey = publicKey
     }
@@ -42,7 +42,7 @@ public class _objc_SwiftyRSA: NSObject { // swiftlint:disable:this type_name
         let (privateKey, publicKey) = try SwiftyRSA.generateRSAKeyPair(sizeInBits: size)
         return _objc_KeyPair(
             privateKey: _objc_PrivateKey(swiftValue: privateKey),
-            publicKey: _objc_PublicKey(swiftValue: publicKey)
+            publicKey: _objc_RSA_PublicKey(swiftValue: publicKey)
         )
     }
 }
@@ -50,9 +50,9 @@ public class _objc_SwiftyRSA: NSObject { // swiftlint:disable:this type_name
 // MARK: - PublicKey
 
 @objc(PublicKey)
-public class _objc_PublicKey: NSObject, Key, ObjcBridgeable { // swiftlint:disable:this type_name
+public class _objc_RSA_PublicKey: NSObject, Key, ObjcBridgeable { // swiftlint:disable:this type_name
     
-    fileprivate let swiftValue: PublicKey
+    fileprivate let swiftValue: RSAPublicKey
     
     @objc public var reference: SecKey {
         return swiftValue.reference
@@ -74,36 +74,36 @@ public class _objc_PublicKey: NSObject, Key, ObjcBridgeable { // swiftlint:disab
         return try swiftValue.base64String()
     }
     
-    required public init(swiftValue: PublicKey) {
+    required public init(swiftValue: RSAPublicKey) {
         self.swiftValue = swiftValue
     }
     
     @objc required public init(data: Data) throws {
-        self.swiftValue = try PublicKey(data: data)
+        self.swiftValue = try RSAPublicKey(data: data)
     }
     
     @objc public required init(reference: SecKey) throws {
-        self.swiftValue = try PublicKey(reference: reference)
+        self.swiftValue = try RSAPublicKey(reference: reference)
     }
     
     @objc public required init(base64Encoded base64String: String) throws {
-        self.swiftValue = try PublicKey(base64Encoded: base64String)
+        self.swiftValue = try RSAPublicKey(base64Encoded: base64String)
     }
     
     @objc public required init(pemEncoded pemString: String) throws {
-        self.swiftValue = try PublicKey(pemEncoded: pemString)
+        self.swiftValue = try RSAPublicKey(pemEncoded: pemString)
     }
     
     @objc public required init(pemNamed pemName: String, in bundle: Bundle) throws {
-        self.swiftValue = try PublicKey(pemNamed: pemName, in: bundle)
+        self.swiftValue = try RSAPublicKey(pemNamed: pemName, in: bundle)
     }
     
     @objc public required init(derNamed derName: String, in bundle: Bundle) throws {
-        self.swiftValue = try PublicKey(derNamed: derName, in: bundle)
+        self.swiftValue = try RSAPublicKey(derNamed: derName, in: bundle)
     }
     
-    @objc public static func publicKeys(pemEncoded pemString: String) -> [_objc_PublicKey] {
-        return PublicKey.publicKeys(pemEncoded: pemString).map { _objc_PublicKey(swiftValue: $0) }
+    @objc public static func publicKeys(pemEncoded pemString: String) -> [_objc_RSA_PublicKey] {
+        return RSAPublicKey.publicKeys(pemEncoded: pemString).map { _objc_RSA_PublicKey(swiftValue: $0) }
     }
 }
 
@@ -210,7 +210,7 @@ public class _objc_ClearMessage: NSObject, Message, ObjcBridgeable { // swiftlin
         return try swiftValue.string(encoding: encoding)
     }
     
-    @objc public func encrypted(with key: _objc_PublicKey, padding: Padding) throws -> _objc_EncryptedMessage {
+    @objc public func encrypted(with key: _objc_RSA_PublicKey, padding: Padding) throws -> _objc_EncryptedMessage {
         let encryptedMessage = try swiftValue.encrypted(with: key.swiftValue, padding: padding)
         return _objc_EncryptedMessage(swiftValue: encryptedMessage)
     }
@@ -220,7 +220,7 @@ public class _objc_ClearMessage: NSObject, Message, ObjcBridgeable { // swiftlin
         return _objc_Signature(swiftValue: signature)
     }
     
-    @objc public func verify(with key: _objc_PublicKey, signature: _objc_Signature, digestType: _objc_Signature.DigestType) throws -> _objc_VerificationResult {
+    @objc public func verify(with key: _objc_RSA_PublicKey, signature: _objc_Signature, digestType: _objc_Signature.DigestType) throws -> _objc_VerificationResult {
         let isSuccessful = try swiftValue.verify(with: key.swiftValue, signature: signature.swiftValue, digestType: digestType.swiftValue)
         return _objc_VerificationResult(isSuccessful: isSuccessful)
     }

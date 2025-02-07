@@ -20,8 +20,8 @@ class PublicKeyTests: XCTestCase {
             return XCTFail("file not found in bundle")
         }
         let data = try Data(contentsOf: URL(fileURLWithPath: path))
-        let publicKey = try PublicKey(data: data)
-        let newPublicKey = try? PublicKey(reference: publicKey.reference)
+        let publicKey = try RSAPublicKey(data: data)
+        let newPublicKey = try? RSAPublicKey(reference: publicKey.reference)
         XCTAssertNotNil(newPublicKey)
     }
     
@@ -39,7 +39,7 @@ class PublicKeyTests: XCTestCase {
         let privateKey = try PrivateKey(pemEncoded: str)
         
         TestUtils.assertThrows(type: SwiftyRSAError.notAPublicKey) {
-            _ = try PublicKey(reference: privateKey.reference)
+            _ = try RSAPublicKey(reference: privateKey.reference)
         }
     }
     
@@ -48,7 +48,7 @@ class PublicKeyTests: XCTestCase {
             return XCTFail("file not found in bundle")
         }
         let data = try Data(contentsOf: URL(fileURLWithPath: path))
-        let publicKey = try? PublicKey(data: data)
+        let publicKey = try? RSAPublicKey(data: data)
         XCTAssertNotNil(publicKey)
     }
     
@@ -57,7 +57,7 @@ class PublicKeyTests: XCTestCase {
             return XCTFail("file not found in bundle")
         }
         let str = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
-        let publicKey = try? PublicKey(base64Encoded: str)
+        let publicKey = try? RSAPublicKey(base64Encoded: str)
         XCTAssertNotNil(publicKey)
     }
     
@@ -66,7 +66,7 @@ class PublicKeyTests: XCTestCase {
             return XCTFail("file not found in bundle")
         }
         let str = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
-        let publicKey = try? PublicKey(base64Encoded: str)
+        let publicKey = try? RSAPublicKey(base64Encoded: str)
         XCTAssertNotNil(publicKey)
     }
     
@@ -75,17 +75,17 @@ class PublicKeyTests: XCTestCase {
             return XCTFail("file not found in bundle")
         }
         let str = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
-        let publicKey = try? PublicKey(pemEncoded: str)
+        let publicKey = try? RSAPublicKey(pemEncoded: str)
         XCTAssertNotNil(publicKey)
     }
     
     func test_initWithPEMName() throws {
-        let publicKey = try? PublicKey(pemNamed: "swiftyrsa-public", in: bundle)
+        let publicKey = try? RSAPublicKey(pemNamed: "swiftyrsa-public", in: bundle)
         XCTAssertNotNil(publicKey)
     }
     
     func test_initWithDERName() throws {
-        let publicKey = try? PublicKey(pemNamed: "swiftyrsa-public", in: bundle)
+        let publicKey = try? RSAPublicKey(pemNamed: "swiftyrsa-public", in: bundle)
         XCTAssertNotNil(publicKey)
     }
     
@@ -94,24 +94,24 @@ class PublicKeyTests: XCTestCase {
             return XCTFail("file not found in bundle")
         }
         let str = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
-        let publicKey = try? PublicKey(pemEncoded: str)
+        let publicKey = try? RSAPublicKey(pemEncoded: str)
         XCTAssertNotNil(publicKey)
     }
     
     func test_publicKeysFromComplexPEMFileWorksCorrectly() {
         let input = TestUtils.pemKeyString(name: "multiple-keys-testcase")
-        let keys = PublicKey.publicKeys(pemEncoded: input)
+        let keys = RSAPublicKey.publicKeys(pemEncoded: input)
         XCTAssertEqual(keys.count, 9)
     }
     
     func test_publicKeysFromEmptyPEMFileReturnsEmptyArray() {
-        let keys = PublicKey.publicKeys(pemEncoded: "")
+        let keys = RSAPublicKey.publicKeys(pemEncoded: "")
         XCTAssertEqual(keys.count, 0)
     }
     
     func test_publicKeysFromPrivateKeyPEMFileReturnsEmptyArray() {
         let input = TestUtils.pemKeyString(name: "swiftyrsa-private")
-        let keys = PublicKey.publicKeys(pemEncoded: input)
+        let keys = RSAPublicKey.publicKeys(pemEncoded: input)
         XCTAssertEqual(keys.count, 0)
     }
     
@@ -123,7 +123,7 @@ class PublicKeyTests: XCTestCase {
                 return XCTFail("file not found in bundle")
             }
             let data = try Data(contentsOf: URL(fileURLWithPath: path))
-            let publicKey = try PublicKey(data: data)
+            let publicKey = try RSAPublicKey(data: data)
             
             guard let dataFromKeychain = try? publicKey.data() else {
                 return XCTFail("file not found in bundle")
@@ -139,24 +139,24 @@ class PublicKeyTests: XCTestCase {
                 return XCTFail("file not found in bundle")
             }
             let str = try String(contentsOf: URL(fileURLWithPath: path), encoding: .utf8)
-            let publicKey = try PublicKey(pemEncoded: str)
+            let publicKey = try RSAPublicKey(pemEncoded: str)
             XCTAssertNotNil(publicKey.originalData)
             XCTAssertNotNil(try? publicKey.data())
         }
     }
     
     func test_pemString() throws {
-        let publicKey = try PublicKey(pemNamed: "swiftyrsa-public", in: bundle)
+        let publicKey = try RSAPublicKey(pemNamed: "swiftyrsa-public", in: bundle)
         let pemString = try publicKey.pemString()
-        let newPublicKey = try PublicKey(pemEncoded: pemString)
+        let newPublicKey = try RSAPublicKey(pemEncoded: pemString)
         XCTAssertNotNil(newPublicKey)
         XCTAssertEqual(try? publicKey.data(), try? newPublicKey.data())
     }
     
     func test_base64String() throws {
-        let publicKey = try PublicKey(pemNamed: "swiftyrsa-public", in: bundle)
+        let publicKey = try RSAPublicKey(pemNamed: "swiftyrsa-public", in: bundle)
         let base64String = try publicKey.base64String()
-        let newPublicKey = try PublicKey(base64Encoded: base64String)
+        let newPublicKey = try RSAPublicKey(base64Encoded: base64String)
         XCTAssertNotNil(newPublicKey)
         XCTAssertEqual(try? publicKey.data(), try? newPublicKey.data())
     }
@@ -188,7 +188,7 @@ class PrivateKeyTests: XCTestCase {
             return XCTFail("file not found in bundle")
         }
         let data = try Data(contentsOf: URL(fileURLWithPath: path))
-        let publicKey = try PublicKey(data: data)
+        let publicKey = try RSAPublicKey(data: data)
         
         TestUtils.assertThrows(type: SwiftyRSAError.notAPrivateKey) {
             _ = try PrivateKey(reference: publicKey.reference)
